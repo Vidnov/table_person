@@ -185,7 +185,6 @@ export default {
     this.Search = search || "";
     this.keyFilter = filter || "id";
     this.Page = page || 1;
-    console.log(this.$route.query);
     this.search();
   },
   methods: {
