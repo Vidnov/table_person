@@ -1,6 +1,7 @@
 <template>
   <div class="home">
     <h1>Таблица Пользователей</h1>
+    {{ Search }}
     <section>
       <div class="table-container">
         <div class="table-container-items">
@@ -215,9 +216,10 @@ export default {
     search() {
       this.SearchData = this.dataUsers.filter((el) => {
         if (this.Search) {
-          if (el.name == this.Search.trim()) {
-            return el;
-          } else if (el.bithDay == this.Search.trim()) {
+          if (
+            el.name.indexOf(this.Search.trim()) != -1 ||
+            el.bithDay.indexOf(this.Search.trim()) != -1
+          ) {
             return el;
           }
         }
