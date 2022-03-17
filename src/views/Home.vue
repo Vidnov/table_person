@@ -1,7 +1,6 @@
 <template>
   <div class="home">
     <h1>Таблица Пользователей</h1>
-    {{ Search }}
     <section>
       <div class="table-container">
         <div class="table-container-items">

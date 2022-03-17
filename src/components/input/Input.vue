@@ -18,6 +18,13 @@ export default {
       this.$emit("update", e.target.value);
     },
   },
+  watch: {
+    value(value) {
+      if (!value) {
+        this.text = "";
+      }
+    },
+  },
   props: {
     placeholder: { type: String },
     value: {
