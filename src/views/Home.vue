@@ -264,10 +264,11 @@ export default {
       let maxId = Math.max(...this.dataUsers.map((i) => i.id));
       let newUser = {
         id: maxId + 1,
-        name: value.name,
+        name: value.name.trim(),
         bithDay: value.bithDay,
       };
       this.dataUsers.push(newUser);
+      this.SearchData.push(newUser);
     },
     deliteUser(id) {
       this.dataUsers = this.dataUsers.filter((User) => User.id !== id);
