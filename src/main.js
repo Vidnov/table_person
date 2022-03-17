@@ -6,3 +6,4 @@ import ElementPlus from "element-plus";
 import "element-plus/dist/index.css";
 
 createApp(App).use(store).use(router).use(ElementPlus).mount("#app");
+// /?page=2&search=Евланников%20Антон%20Павлович&filter=bithday

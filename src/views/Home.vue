@@ -10,6 +10,20 @@
             size="lg"
             @click="openDialogAdd"
           />
+          <Button
+            v-if="!ChoiseTable"
+            title="Выбрать"
+            color="white"
+            size="lg"
+            @click="ChoiseActive"
+          />
+          <Button
+            v-else
+            title="Удалить несколько"
+            color="red"
+            size="lg"
+            @click="DeliteMany"
+          />
           <div></div>
           <div class="search">
             <div class="btn-group-search">
@@ -27,9 +41,13 @@
         <Table
           :data="data"
           :SearchData="searchDatafilter"
+          :Pages="pages"
+          :Choise="ChoiseTable"
           @editUser="editUser"
           @deliteUser="deliteUser"
           @filterData="filterData"
+          @Switching="Switching"
+          @choise="getChoiseElem"
         />
       </div>
     </section>
@@ -49,8 +67,6 @@
 
 <script>
 // @ is an alias to /src
-
-import { Search, Edit, Delete } from "@element-plus/icons-vue";
 import ModalCreate from "../components/modal/ModalElementCreate.vue";
 import ModalEdit from "../components/modal/ModalElementEdit.vue";
 import Button from "../components/button/Button.vue";
@@ -61,30 +77,34 @@ export default {
   data() {
     return {
       SearchData: [],
+      ChoiseElements: [],
       Search: "",
-      SearchIco: Search,
+      ChoiseTable: false,
       dialogAdd: false,
       dialogEdit: false,
       dataEdit: "",
       keyFilter: "id",
+      Page: 1,
       dataUsers: [
         { id: 1, name: "Aгаев Иван Иванович", bithDay: "11.02.1981" },
         { id: 2, name: "Стойловский Петр Игоревич", bithDay: "12.01.1991" },
         { id: 3, name: "Сидоров Иван Петрович", bithDay: "11.07.1994" },
         { id: 4, name: "Рагушина Юлия Федоровна", bithDay: "21.08.1981" },
-        { id: 5, name: "Самойлова Татьяна Николаевна", bithDay: "21.01.1971" },
+        { id: 5, name: "Самойлова Татьяна Николаевна", bithDay: "21.01.1991" },
         { id: 6, name: "Евланников Антон Павлович", bithDay: "11.02.2001" },
         { id: 7, name: "Стойловский Петр Игоревич", bithDay: "12.01.1992" },
+        { id: 8, name: "Самойлова Татьяна Николаевна", bithDay: "21.01.1992" },
+        { id: 9, name: "Евланников Антон Павлович", bithDay: "09.03.2022" },
+        { id: 10, name: "Стойловский Петр Игоревич", bithDay: "12.01.1992" },
       ],
     };
   },
   computed: {
     data() {
+      let Arr = [];
       switch (this.keyFilter) {
-        case "default":
-          return this.dataUsers;
         case "fio":
-          return (this.dataUsers = this.dataUsers.sort((a, b) => {
+          this.dataUsers = this.dataUsers.sort((a, b) => {
             if (a.name > b.name) {
               return 1;
             }
@@ -92,9 +112,10 @@ export default {
               return -1;
             }
             return 0;
-          }));
+          });
+          return (Arr = this.dataUsers.slice(5 * this.Page - 5, 5 * this.Page));
         case "bithday":
-          return (this.dataUsers = this.dataUsers.sort((a, b) => {
+          this.dataUsers = this.dataUsers.sort((a, b) => {
             if (new Date(a.bithDay).getTime() < new Date(b.bithDay).getTime()) {
               return 1;
             }
@@ -102,9 +123,10 @@ export default {
               return -1;
             }
             return 0;
-          }));
+          });
+          return (Arr = this.dataUsers.slice(5 * this.Page - 5, 5 * this.Page));
         case "id":
-          return (this.dataUsers = this.dataUsers.sort((a, b) => {
+          this.dataUsers = this.dataUsers.sort((a, b) => {
             if (a.id > b.id) {
               return 1;
             }
@@ -112,7 +134,8 @@ export default {
               return -1;
             }
             return 0;
-          }));
+          });
+          return (Arr = this.dataUsers.slice(5 * this.Page - 5, 5 * this.Page));
       }
     },
     searchDatafilter() {
@@ -151,20 +174,52 @@ export default {
           }));
       }
     },
+    pages() {
+      let pages;
+      pages = this.dataUsers.length / 5;
+      return Math.ceil(pages);
+    },
   },
   mounted() {
-    const { sort, search } = this.$route.query;
-    this.Search = search;
-    this.keyFilter = sort || "id";
+    const { filter, search, page } = this.$route.query;
+    this.Search = search || "";
+    this.keyFilter = filter || "id";
+    this.Page = page || 1;
+    console.log(this.$route.query);
     this.search();
   },
   methods: {
+    getChoiseElem(Elements) {
+      this.ChoiseElements = Elements;
+    },
+    DeliteMany() {
+      if (this.ChoiseElements.length > 0) {
+        for (let i = 0; i < this.ChoiseElements.length; i++) {
+          this.dataUsers = this.dataUsers.filter((el) => {
+            return el.id !== this.ChoiseElements[i].id;
+          });
+          this.SearchData = this.SearchData.filter((el) => {
+            return el.id !== this.ChoiseElements[i].id;
+          });
+        }
+      }
+      this.ChoiseElements = [];
+      this.ChoiseTable = false;
+    },
+    ChoiseActive() {
+      this.ChoiseTable = true;
+    },
+    Switching(Page) {
+      this.Page = Page;
+    },
     search() {
       this.SearchData = this.dataUsers.filter((el) => {
-        if (el.name == this.Search.trim()) {
-          return el;
-        } else if (el.bithDay == this.Search.trim()) {
-          return el;
+        if (this.Search) {
+          if (el.name == this.Search.trim()) {
+            return el;
+          } else if (el.bithDay == this.Search.trim()) {
+            return el;
+          }
         }
       });
     },
@@ -177,6 +232,12 @@ export default {
     },
     saveUser(data) {
       this.dataUsers = this.dataUsers.map((user) => {
+        if (user.id == data.id) {
+          user = data;
+        }
+        return user;
+      });
+      this.SearchData = this.SearchData.map((user) => {
         if (user.id == data.id) {
           user = data;
         }
@@ -210,6 +271,7 @@ export default {
     },
     deliteUser(id) {
       this.dataUsers = this.dataUsers.filter((User) => User.id !== id);
+      this.SearchData = this.SearchData.filter((User) => User.id !== id);
     },
   },
   components: {
@@ -231,7 +293,8 @@ section {
   }
   .table-container-items {
     display: grid;
-    grid-template-columns: auto 1fr 300px;
+    grid-template-columns: auto auto 1fr 300px;
+    grid-gap: 10px;
   }
   .search {
     display: grid;

@@ -58,7 +58,7 @@ export default {
       if (name && dateBith) {
         let data = {
           name: name,
-          bithDay: new Date(dateBith).toLocaleDateString(),
+          bithDay: dateBith,
         };
         this.$emit("create", data);
         this.dialogVisible = false;

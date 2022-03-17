@@ -10,7 +10,7 @@ export default {
   },
   watch: {
     date(value) {
-      this.$emit("update", value);
+      this.$emit("update", new Date(value).toLocaleDateString());
     },
   },
   props: {

@@ -10,7 +10,7 @@
         placeholder="Введите ФИО"
       />
       <span>Укажите дату рождения</span>
-      <InputDate class="input" :value="dateBith" @update="updateDate" />
+      <InputDate class="input" @update="updateDate" />
     </div>
 
     <div class="allert" v-show="alert">
@@ -60,12 +60,14 @@ export default {
       this.$emit("close");
     },
     SaveUser() {
+      let date;
       const { id, name, dateBith } = this;
+
       if (name && dateBith) {
         let data = {
           id: id,
           name: name,
-          bithDay: new Date(dateBith).toLocaleDateString(),
+          bithDay: dateBith,
         };
         this.$emit("save", data);
         this.dialogVisible = false;
